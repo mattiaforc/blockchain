@@ -1,0 +1,1 @@
+A small generalized Java implementation of a blockchain.
