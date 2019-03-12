@@ -4,7 +4,7 @@ Mail: mattiaforc@gmail.com */
 
 package blockchain;
 
-public class HashPointer {
-	Block pointedBlock;
-	String hash;
+public class HashPointer<T> {
+	private Block<T> block;
+	private int hash;
 }
