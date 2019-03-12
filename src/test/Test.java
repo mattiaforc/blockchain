@@ -38,7 +38,6 @@ class Test {
 		Assert.assertFalse(sut.getPrevious().isPresent());
 		Assert.assertEquals(BigInteger.ZERO, sut.getHeight());
 		Assert.assertEquals("Lorem", sut.getData());
-		Assert.assertTrue(null != sut.getId());
 		
 		var hp = new HashPointer<String>(sut, hasher.hash(sut.getData()));
 		builder.setPrevious(hp);
@@ -55,7 +54,6 @@ class Test {
 		);
 		Assert.assertEquals(BigInteger.ONE, sut.getHeight());
 		Assert.assertEquals("Ipsum", sut.getData());
-		Assert.assertTrue(null != sut.getId());
 	}
 	
 	public static void main(String[] args) {
