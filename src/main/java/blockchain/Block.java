@@ -26,4 +26,9 @@ public class Block<T, H> {
     public Optional<HashPointer<T, H>> getPrevious() {
         return Optional.ofNullable(previous);
     }
+
+    @Override
+    public String toString() {
+        return "Block(data: " + this.data + ", hash: " + this.previous.getHash() + ");";
+    }
 }

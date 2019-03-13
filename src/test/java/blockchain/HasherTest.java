@@ -1,9 +1,7 @@
 package test.java.blockchain;
 
-import main.java.blockchain.Eq;
-import main.java.blockchain.Hash;
-import main.java.blockchain.Hasher;
-import main.java.blockchain.HasherBuilder;
+import main.java.blockchain.hasher.Hasher;
+import main.java.blockchain.hasher.HasherBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,20 +9,21 @@ import org.junit.jupiter.api.Test;
 class HasherTest {
     static private final String a = "LoReM";
     static private final String b = "lorem";
-    static private final Eq<String> defaultComparator = (String a, String b) -> false;
-    static private final Hash<String, Integer> defaultHash = (String a) -> 0xcafe;
+    static private final Hasher.Eq<String> defaultComparator = (String a, String b) -> false;
+    static private final Hasher.Join<Integer> defaultJoin = (Integer h1, Integer h2) -> h1 ^ h2;
+    static private final Hasher.Hash<String, Integer> defaultHash = (String a) -> 0xcafe;
     private Hasher<String, Integer> sut = null;
-    private HasherBuilder<String, Integer> hasherBuilder = new HasherBuilder<>(defaultComparator, defaultHash);
+    private HasherBuilder<String, Integer> hasherBuilder = new HasherBuilder<>(defaultComparator, defaultHash, defaultJoin);
 
     @BeforeEach
     void resetBuilder() {
-        hasherBuilder.setHash(defaultHash);
+        hasherBuilder.setHash(defaultHash, defaultJoin);
         hasherBuilder.setComparator(defaultComparator);
     }
 
     @Test
     void itWorks1() {
-        hasherBuilder.setHash(String::hashCode);
+        hasherBuilder.setHash(String::hashCode, defaultJoin);
         hasherBuilder.setComparator(String::equals);
         sut = hasherBuilder.build();
 
@@ -36,7 +35,7 @@ class HasherTest {
 
     @Test
     void itWorks2() {
-        hasherBuilder.setHash(String::hashCode);
+        hasherBuilder.setHash(String::hashCode, defaultJoin);
         hasherBuilder.setComparator(String::equalsIgnoreCase);
         sut = hasherBuilder.build();
 
