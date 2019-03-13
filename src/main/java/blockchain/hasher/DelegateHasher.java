@@ -5,7 +5,7 @@ public class DelegateHasher<T, H> implements Hasher<T, H> {
     private Join<H> j;
     private Hash<T, H> h;
 
-    DelegateHasher(Eq<T> e, Hash<T, H> h, Join<H> j) {
+    public DelegateHasher(Eq<T> e, Hash<T, H> h, Join<H> j) {
         assert (null != e);
         assert (null != h);
         assert (null != j);

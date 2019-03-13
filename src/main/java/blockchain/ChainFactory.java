@@ -1,9 +1,20 @@
 package main.java.blockchain;
 
+import main.java.blockchain.hasher.DelegateHasher;
 import main.java.blockchain.hasher.Hasher;
 
-public class ChainFactory<T, H> {
-    public Chain<T, H> create(Hasher<T, H> hasher, Unit<T> unit) {
+public class ChainFactory {
+    private final static Hasher<String, String> SHA256StringHasher = new DelegateHasher<>(
+            String::equals,
+            Utils::getSHA256String,
+            (h1, h2) -> Utils.getSHA256String(h1 + h2)
+    );
+
+    public <T, H> Chain<T, H> create(Hasher<T, H> hasher, Unit<T> unit) {
         return new Chain<>(hasher, unit).generateGenesis();
+    }
+
+    public Chain<String, String> createSHA256StringChain() {
+        return new Chain<>(SHA256StringHasher, () -> "");
     }
 }
