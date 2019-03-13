@@ -1,7 +1,7 @@
-package blockchain;
+package main.java.blockchain;
 
-public class HasherBuilder<T> {
-	public HasherBuilder(Eq<T> e, Hash<T> h) {
+public class HasherBuilder<T, H> {
+	public HasherBuilder(Eq<T> e, Hash<T, H> h) {
 		assert(null != e);
 		assert(null != h);
 		this.h = h;
@@ -13,17 +13,17 @@ public class HasherBuilder<T> {
 		this.e = e;
 	}
 	
-	public void setHash(Hash<T> h) {
+	public void setHash(Hash<T, H> h) {
 		assert(null != h);
 		this.h = h;
 	}
 	
-	public Hasher<T> build() {
+	public Hasher<T, H> build() {
 		assert(null != this.h);
 		assert(null != this.e);
-		return new DelegateHasher<T>(this.e, this.h);
+		return new DelegateHasher<>(this.e, this.h);
 	}
 	
 	private Eq<T> e;
-	private Hash<T> h;
+	private Hash<T, H> h;
 }
