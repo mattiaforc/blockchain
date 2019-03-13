@@ -10,11 +10,11 @@ public class ChainFactory {
             (h1, h2) -> Utils.getSHA256String(h1 + h2)
     );
 
-    public <T, H> Chain<T, H> create(Hasher<T, H> hasher, Unit<T> unit) {
+    static public <T, H> Chain<T, H> create(Hasher<T, H> hasher, Unit<T> unit) {
         return new Chain<>(hasher, unit).generateGenesis();
     }
 
-    public Chain<String, String> createSHA256StringChain() {
-        return new Chain<>(SHA256StringHasher, () -> "");
+    static public Chain<String, String> createSHA256StringChain() {
+        return create(SHA256StringHasher, () -> "");
     }
 }
