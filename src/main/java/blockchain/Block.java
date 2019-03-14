@@ -29,6 +29,6 @@ public class Block<T, H> {
 
     @Override
     public String toString() {
-        return "Block(data: " + this.data + ", hash: " + this.getPrevious().map(h -> h.getHash().toString()).orElse("") + ");";
+        return "Block(height: " + this.height + ", data: " + this.data + ")";
     }
 }

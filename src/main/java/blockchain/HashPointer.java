@@ -17,4 +17,9 @@ public class HashPointer<T, H> {
     public H getHash() {
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return "HashPointer(hash: " + this.hash + ", block: " + this.block + ")";
+    }
 }

@@ -14,7 +14,7 @@ public class ChainFactory {
         return new Chain<>(hasher, unit).generateGenesis();
     }
 
-    static public Chain<String, String> createSHA256StringChain() {
-        return create(SHA256StringHasher, () -> "");
+    static public Chain<String, String> createSHA256StringChain(String genesisData) {
+        return create(SHA256StringHasher, () -> genesisData);
     }
 }
