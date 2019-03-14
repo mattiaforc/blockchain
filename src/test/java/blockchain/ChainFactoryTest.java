@@ -13,7 +13,7 @@ class ChainFactoryTest {
 
     @BeforeEach
     void initialize() {
-        sut = ChainFactory.createSHA256StringChain();
+        sut = ChainFactory.createSHA256StringChain("Genesis Block");
     }
 
     @Test
@@ -29,6 +29,13 @@ class ChainFactoryTest {
         sut.chain("Third block");
         Assertions.assertEquals(sut.getHeight(), BigInteger.valueOf(3));
 
-        Assertions.assertEquals("Third blockSecond blockFirst block", sut.reduce("", String::concat));
+        Assertions.assertEquals(
+                "Third blockSecond blockFirst blockGenesis Block",
+                sut.stream()
+                        .map(hp -> hp.getBlock().getData())
+                        .reduce("", String::concat)
+        );
+
+        sut.stream().forEach(System.out::println);
     }
 }

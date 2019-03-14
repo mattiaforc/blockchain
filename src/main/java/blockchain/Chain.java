@@ -3,12 +3,9 @@ package main.java.blockchain;
 import main.java.blockchain.hasher.Hasher;
 
 import java.math.BigInteger;
-import java.util.Optional;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-// TODO: Morph everything into a stream
 public class Chain<T, H> {
     private HashPointer<T, H> head;
     private Hasher<T, H> hasher;
@@ -37,29 +34,7 @@ public class Chain<T, H> {
         return this.head.getBlock().getHeight();
     }
 
-    public void forEach(Consumer<Block<T, H>> c) {
-        for (var hp = Optional.ofNullable(head); hp.isPresent(); hp = hp.get().getBlock().getPrevious()) {
-            c.accept(hp.get().getBlock());
-        }
-    }
-
-    public void filter(Predicate<Block<T, H>> p, Consumer<Block<T, H>> c) {
-        for (var hp = Optional.ofNullable(head); hp.isPresent(); hp = hp.get().getBlock().getPrevious()) {
-            var block = hp.get().getBlock();
-
-            if (p.test(block)) {
-                c.accept(block);
-            }
-        }
-    }
-
-    public T reduce(T identity, BinaryOperator<T> accumulator) {
-        var result = identity;
-
-        for (var hp = Optional.ofNullable(head); hp.isPresent(); hp = hp.get().getBlock().getPrevious()) {
-            result = accumulator.apply(result, hp.get().getBlock().getData());
-        }
-
-        return result;
+    public Stream<HashPointer<T, H>> stream() {
+        return Stream.iterate(this.head, Objects::nonNull, o -> o.getBlock().getPrevious().orElse(null));
     }
 }
