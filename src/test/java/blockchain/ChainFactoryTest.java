@@ -2,6 +2,8 @@ package test.java.blockchain;
 
 import main.java.blockchain.Chain;
 import main.java.blockchain.ChainFactory;
+import main.java.blockchain.Utils;
+import main.java.blockchain.unit.Instance;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 
 class ChainFactoryTest {
-    private Chain<String, String> sut;
+    private Chain<String, String, String> sut;
 
     @BeforeEach
     void initialize() {
-        sut = ChainFactory.createSHA256StringChain("Genesis Block");
+        sut = ChainFactory.createSHA256StringChain(() -> new Instance<>(Utils.getSHA256String("Genesis block"), "Genesis Block"));
     }
 
     @Test

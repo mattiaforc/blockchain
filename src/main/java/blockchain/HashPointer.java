@@ -1,25 +1,26 @@
 package main.java.blockchain;
 
-public class HashPointer<T, H> {
-    private Block<T, H> block;
-    private H hash;
+public class HashPointer<K, T> {
+    private Block<K, T> block;
+    private K blockHash;
 
-    public HashPointer(Block<T, H> block, H hash) {
+    public HashPointer(Block<K, T> block, K blockHash) {
         assert (null != block);
+        assert (null != blockHash);
         this.block = block;
-        this.hash = hash;
+        this.blockHash = blockHash;
     }
 
-    public Block<T, H> getBlock() {
+    public Block<K, T> getBlock() {
         return block;
     }
 
-    public H getHash() {
-        return hash;
+    public K getHash() {
+        return blockHash;
     }
 
     @Override
     public String toString() {
-        return "HashPointer(hash: " + this.hash + ", block: " + this.block + ")";
+        return "HashPointer(hash: " + this.blockHash + ", block: " + this.block + ")";
     }
 }

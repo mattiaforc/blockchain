@@ -1,32 +1,36 @@
 package main.java.blockchain;
 
 import main.java.blockchain.hasher.Hasher;
+import main.java.blockchain.unit.Unit;
 
 import java.math.BigInteger;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class Chain<T, H> {
-    private HashPointer<T, H> head;
-    private Hasher<T, H> hasher;
-    private Unit<T> unit;
+public class Chain<H, K, T> {
+    private HashPointer<K, T> head;
+    private Hasher<H, K, T> hasher;
+    private Unit<H, T> unit;
+    private Eq<T> eq;
 
-    Chain(Hasher<T, H> hasher, Unit<T> unit) {
+    Chain(Hasher<H, K, T> hasher, Unit<H, T> unit, Eq<T> eq) {
         assert (null != hasher);
         assert (null != unit);
+        assert (null != eq);
         this.hasher = hasher;
         this.unit = unit;
+        this.eq = eq;
     }
 
-    Chain<T, H> generateGenesis() {
-        var genesisBlock = new Block<T, H>(BigInteger.ZERO, unit.getInstance(), null);
-        head = new HashPointer<>(genesisBlock, hasher.hash(unit.getInstance()));
+    Chain<H, K, T> generateGenesis() {
+        var genesisBlock = new Block<K, T>(BigInteger.ZERO, unit.getData(), null);
+        head = new HashPointer<>(genesisBlock, hasher.computeBlockHash(unit.getHash(), hasher.getBlockHashUnit()));
         return this;
     }
 
-    public Chain<T, H> chain(T data) {
+    public Chain<H, K, T> chain(T data) {
         var block = new Block<>(head.getBlock().getHeight().add(BigInteger.ONE), data, head);
-        head = new HashPointer<>(block, hasher.join(head.getHash(), hasher.hash(data)));
+        head = new HashPointer<>(block, hasher.computeBlockHash(hasher.computeDataHash(data), head.getHash()));
         return this;
     }
 
@@ -34,7 +38,7 @@ public class Chain<T, H> {
         return this.head.getBlock().getHeight();
     }
 
-    public Stream<HashPointer<T, H>> stream() {
+    public Stream<HashPointer<K, T>> stream() {
         return Stream.iterate(this.head, Objects::nonNull, o -> o.getBlock().getPrevious().orElse(null));
     }
 }

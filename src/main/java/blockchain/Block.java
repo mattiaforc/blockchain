@@ -3,12 +3,12 @@ package main.java.blockchain;
 import java.math.BigInteger;
 import java.util.Optional;
 
-public class Block<T, H> {
+public class Block<K, T> {
     private T data;
     private BigInteger height;
-    private HashPointer<T, H> previous;
+    private HashPointer<K, T> previous;
 
-    Block(BigInteger height, T data, HashPointer<T, H> previous) {
+    Block(BigInteger height, T data, HashPointer<K, T> previous) {
         assert (null != height);
         this.data = data;
         this.height = height;
@@ -23,7 +23,7 @@ public class Block<T, H> {
         return height;
     }
 
-    public Optional<HashPointer<T, H>> getPrevious() {
+    public Optional<HashPointer<K, T>> getPrevious() {
         return Optional.ofNullable(previous);
     }
 

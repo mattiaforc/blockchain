@@ -1,24 +1,21 @@
 package main.java.blockchain.hasher;
 
-public interface Hasher<T, H> {
-    boolean equals(T a, T b);
+public interface Hasher<H, K, T> {
+    H computeDataHash(T data);
 
-    H hash(T obj);
+    K computeBlockHash(H thisDataHash, K previousBlockHash);
 
-    H join(H h1, H h2);
+    K getBlockHashUnit();
 
-    interface Eq<T> {
-        boolean equals(T a, T b);
+    interface DataHasher<H, T> {
+        H computeDataHash(T data);
     }
 
-    interface Hash<T, H> {
-        H hash(T obj);
+    interface BlockHasher<H, K> {
+        K computeBlockHash(H thisDataHash, K previousBlockHash);
     }
 
-    interface Join<H> {
-        /**
-         * Returns a new hash calculated over the concatenation of the given two hashes.
-         */
-        H join(H h1, H h2);
+    interface BlockHashUnit<K> {
+        K getBlockHashUnit();
     }
 }

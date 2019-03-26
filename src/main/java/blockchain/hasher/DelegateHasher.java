@@ -1,31 +1,31 @@
 package main.java.blockchain.hasher;
 
-public class DelegateHasher<T, H> implements Hasher<T, H> {
-    private Eq<T> e;
-    private Join<H> j;
-    private Hash<T, H> h;
+public class DelegateHasher<H, K, T> implements Hasher<H, K, T> {
+    private BlockHashUnit<K> blockHashUnit;
+    private BlockHasher<H, K> blockHasher;
+    private DataHasher<H, T> dataHasher;
 
-    public DelegateHasher(Eq<T> e, Hash<T, H> h, Join<H> j) {
-        assert (null != e);
-        assert (null != h);
-        assert (null != j);
-        this.e = e;
-        this.h = h;
-        this.j = j;
+    public DelegateHasher(DataHasher<H, T> dataHasher, BlockHasher<H, K> blockHasher, BlockHashUnit<K> blockHashUnit) {
+        assert (null != dataHasher);
+        assert (null != blockHasher);
+        assert (null != blockHashUnit);
+        this.dataHasher = dataHasher;
+        this.blockHasher = blockHasher;
+        this.blockHashUnit = blockHashUnit;
     }
 
     @Override
-    public boolean equals(T a, T b) {
-        return e.equals(a, b);
+    public H computeDataHash(T data) {
+        return dataHasher.computeDataHash(data);
     }
 
     @Override
-    public H hash(T obj) {
-        return h.hash(obj);
+    public K computeBlockHash(H h, K k) {
+        return blockHasher.computeBlockHash(h, k);
     }
 
     @Override
-    public H join(H h1, H h2) {
-        return j.join(h1, h2);
+    public K getBlockHashUnit() {
+        return blockHashUnit.getBlockHashUnit();
     }
 }
