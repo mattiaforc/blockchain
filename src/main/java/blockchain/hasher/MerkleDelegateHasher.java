@@ -1,10 +1,10 @@
 package main.java.blockchain.hasher;
 
 public class MerkleDelegateHasher<M, T> implements MerkleHasher<M, T> {
-    private MerkleHasher.MerkleDataHasher<M, T> merkleHasher;
+    private MerkleDataHasher<M, T> merkleHasher;
     private MerkleHasher.MerkleJoiner<M> merkleJoiner;
 
-    public MerkleDelegateHasher(MerkleHasher.MerkleDataHasher<M, T> hasher, MerkleHasher.MerkleJoiner<M> joiner) {
+    public MerkleDelegateHasher(MerkleDataHasher<M, T> hasher, MerkleHasher.MerkleJoiner<M> joiner) {
         assert (hasher != null);
         assert (joiner != null);
         this.merkleHasher = hasher;
@@ -12,12 +12,12 @@ public class MerkleDelegateHasher<M, T> implements MerkleHasher<M, T> {
     }
 
     @Override
-    public M computeDataHash(T data) {
-        return merkleHasher.computeDataHash(data);
+    public M computeHash(T data) {
+        return merkleHasher.computeHash(data);
     }
 
     @Override
-    public M concatenateMerkleHash(M h1, M h2) {
-        return merkleJoiner.concatenateMerkleHash(h1, h2);
+    public M concatenateHash(M h1, M h2) {
+        return merkleJoiner.concatenateHash(h1, h2);
     }
 }

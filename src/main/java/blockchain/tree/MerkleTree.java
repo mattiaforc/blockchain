@@ -1,69 +1,60 @@
 package main.java.blockchain.tree;
 
-import main.java.blockchain.hasher.MerkleDelegateHasher;
-import main.java.blockchain.unit.Initializer;
-import main.java.blockchain.unit.Unit;
+import main.java.blockchain.hasher.MerkleHasher;
 
-public class MerkleTree<M, T> {
-    Node root;
-    Unit<M, T> unit;
-    MerkleDelegateHasher<M, T> hasher;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-    public MerkleTree(Initializer<M, T> initializer, MerkleDelegateHasher<M, T> hasher) {
-        assert (null != initializer);
+public class MerkleTree<H, T> implements HashTree<H> {
+    private HashTree<H> root;
+
+    public MerkleTree(MerkleHasher<H, T> hasher, Stream<T> items) {
         assert (null != hasher);
-        this.unit = new Unit<>(initializer);
-        this.root = new Node(unit.getData());
+
+        var leaves = items
+                .<HashTree<H>>map(o -> new Leaf<>(hasher.computeHash(o)))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        for (var counter = new AtomicInteger(0); leaves.size() > 1; counter.setPlain(0)) {
+            var stack = leaves
+                    .stream()
+                    .collect(Collectors.groupingBy(i -> counter.getAndIncrement() / 2))
+                    .values();
+
+            leaves = stack
+                    .stream()
+                    .map(l -> (l.size() == 1) ? l.get(0) : new Node<>(hasher.concatenateHash(l.get(0).getHash(), l.get(1).getHash()), l.get(0), l.get(1)))
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        // TODO: Empty array -> Unit.getHash()
+        if (leaves.isEmpty()) {
+            root = null;
+        } else {
+            root = leaves.get(0);
+        }
     }
 
-    public M getMerkleRoot() {
-        return root.hash();
+    @Override
+    public void visitPreOrder(Consumer<H> f) {
+        root.visitPreOrder(f);
     }
 
-    public void add(T data) {
-        root.add(data);
+    @Override
+    public void visitInOrder(Consumer<H> f) {
+        root.visitInOrder(f);
     }
 
-    private class Node {
-        private T data;
-        private Node left;
-        private Node right;
+    @Override
+    public void visitPostOrder(Consumer<H> f) {
+        root.visitPostOrder(f);
+    }
 
-        Node(T data) {
-            this.data = data;
-            left = null;
-            right = null;
-        }
-
-        void add(T data) {
-            int leftHeight = getLeftHeight();
-            int rightHeight = getRightHeight();
-
-            if (leftHeight <= rightHeight) {
-                if (leftHeight > 0) {
-                    left.add(data);
-                } else {
-                    left = new Node(data);
-                }
-            } else {
-                if (rightHeight > 0) {
-                    right.add(data);
-                } else {
-                    right = new Node(data);
-                }
-            }
-        }
-
-        M hash() {
-            return hasher.concatenateMerkleHash((null == left) ? unit.getHash() : left.hash(), (null == right) ? unit.getHash() : right.hash());
-        }
-
-        int getLeftHeight() {
-            return (null != left) ? 1 + left.getLeftHeight() + left.getRightHeight() : 0;
-        }
-
-        int getRightHeight() {
-            return (null != right) ? 1 + right.getLeftHeight() + right.getRightHeight() : 0;
-        }
+    @Override
+    public H getHash() {
+        return root.getHash();
     }
 }
