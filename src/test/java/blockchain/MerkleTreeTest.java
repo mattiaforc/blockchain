@@ -13,7 +13,7 @@ public class MerkleTreeTest {
         var sut = new MerkleTree<String, String>(
                 () -> new Instance<>("Hash", "Data"),
                 new MerkleDelegateHasher<>(
-                        (h) -> h + "!H!",
+                        Utils::getSHA256String,
                         (h1, h2) -> h1 + h2));
         sut.add("Primo");
         sut.add("Secondo");

@@ -9,47 +9,19 @@ public class MerkleTree<M, T> {
     Unit<M, T> unit;
     MerkleDelegateHasher<M, T> hasher;
 
-    public MerkleTree(Initializer initializer, MerkleDelegateHasher<M, T> hasher) {
+    public MerkleTree(Initializer<M, T> initializer, MerkleDelegateHasher<M, T> hasher) {
         assert (null != initializer);
-        this.unit = new Unit<M, T>(initializer);
-        root = new Node(unit.getData());
+        assert (null != hasher);
+        this.unit = new Unit<>(initializer);
+        this.root = new Node(unit.getData());
     }
 
     public M getMerkleRoot() {
-        return hash(root);
-    }
-
-    private M hash(Node current) {
-        if (current != null) {
-            return hasher.concatenateMerkleHash(hash(current.left), hash(current.right));
-        } else {
-            return unit.getHash();
-        }
+        return root.hash();
     }
 
     public void add(T data) {
-        root = addRecursive(root, data);
-    }
-
-    private Node addRecursive(Node current, T data) {
-        if (null == current) {
-            return new Node(data);
-        }
-        if (null == current.left) {
-            current.left = addRecursive(current.left, data);
-        } else if (null == current.right) {
-            current.right = addRecursive(current.right, data);
-        }
-        if (null == current.left.left) {
-            current.left.left = addRecursive(current.left.left, data);
-        } else if (null == current.left.right) {
-            current.left.right = addRecursive(current.left.right, data);
-        } else if (null == current.right.left) {
-            current.right.left = addRecursive(current.right.left, data);
-        } else if (null == current.right.right) {
-            current.right.right = addRecursive(current.right.right, data);
-        }
-        return current;
+        root.add(data);
     }
 
     private class Node {
@@ -61,6 +33,37 @@ public class MerkleTree<M, T> {
             this.data = data;
             left = null;
             right = null;
+        }
+
+        void add(T data) {
+            int leftHeight = getLeftHeight();
+            int rightHeight = getRightHeight();
+
+            if (leftHeight <= rightHeight) {
+                if (leftHeight > 0) {
+                    left.add(data);
+                } else {
+                    left = new Node(data);
+                }
+            } else {
+                if (rightHeight > 0) {
+                    right.add(data);
+                } else {
+                    right = new Node(data);
+                }
+            }
+        }
+
+        M hash() {
+            return hasher.concatenateMerkleHash((null == left) ? unit.getHash() : left.hash(), (null == right) ? unit.getHash() : right.hash());
+        }
+
+        int getLeftHeight() {
+            return (null != left) ? 1 + left.getLeftHeight() + left.getRightHeight() : 0;
+        }
+
+        int getRightHeight() {
+            return (null != right) ? 1 + right.getLeftHeight() + right.getRightHeight() : 0;
         }
     }
 }
